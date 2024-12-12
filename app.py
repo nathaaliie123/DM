@@ -68,7 +68,7 @@ if menu == "Profile":
 
     for idx, member in enumerate(members, start=1):
         st.subheader(f"Person {idx}: {member['name']}")
-        st.write(f"Program: {member['study program']}")
+        st.write(f"Study Program: {member['study program']}")
         st.image(member['photo'], caption=f"{member['name']}'s Photo")
 
 
@@ -104,11 +104,14 @@ elif menu == "City Map":
     selected_cities = st.multiselect("Select Cities:", list(city_coordinates[province].keys()))
 
     if selected_cities:
+        # Create the map centered on the chosen province
         m = folium.Map(location=[-7.0, 110.0], zoom_start=7)
 
+        # Add markers for selected cities
         for city in selected_cities:
             folium.Marker(location=city_coordinates[province][city], popup=city).add_to(m)
 
+        # Add connection lines between cities
         for city in selected_cities:
             for neighbor in city_connections.get(city, []):
                 if neighbor in selected_cities:
@@ -117,8 +120,10 @@ elif menu == "City Map":
                         color="blue", weight=2.5
                     ).add_to(m)
 
+        # Display the map
         st_folium(m, width=700, height=500)
 
+        # Create a graph from the selected cities and connections
         graph = create_graph({
             city: [neighbor for neighbor in city_connections.get(city, []) if neighbor in selected_cities]
             for city in selected_cities
